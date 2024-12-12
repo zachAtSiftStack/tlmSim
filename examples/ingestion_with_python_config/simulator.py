@@ -365,6 +365,27 @@ class Simulator:
             "ntpd[2345]: ntpd: time slew +0.001234 s",
         ]
 
+        if self.faults:
+            sys_log_messages += [
+                "kernel: [123456.789012] EXT4-fs error (device sda1): ext4_journal_check_start:56: Detected aborted journal",
+                "kernel: [123456.789012] EXT4-fs (sda1): Remounting filesystem read-only",
+                "sshd[12345]: error: PAM: Authentication failure for illegal user root from 192.168.1.50",
+                "systemd[1]: Failed to start Load Kernel Modules.",
+                "systemd[1]: Unit NetworkManager.service entered failed state.",
+                "kernel: [123456.789012] CPU0: Machine Check Exception: 0 Bank 4: b200000000050408",
+                "kernel: [123456.789012] mce: [Hardware Error]: CPU 0: Machine Check: 0 Bank 4: b200000000050408",
+                "systemd[1]: Failed to start Authorization Manager.",
+                "systemd[1]: NetworkManager.service: Main process exited, code=exited, status=1/FAILURE",
+                "systemd[1]: Failed to start Avahi mDNS/DNS-SD Stack.",
+                "apache2[23456]: AH00163: Apache/2.4.29 (Ubuntu) could not reliably determine the server's fully qualified domain name, using 127.0.1.1",
+                "kernel: [123456.789012] Bluetooth: hci0: command 0x200c tx timeout",
+                "kernel: [123456.789012] Bluetooth: hci0: failed to set controller to accept connection request mode",
+                "systemd[1]: Failed to start GNOME Display Manager.",
+                "systemd[1]: Unit gdm.service entered failed state.",
+                "kernel: [123456.789012] iwlwifi 0000:03:00.0: Microcode SW error detected. Restarting 0x2000000.",
+                "kernel: [123456.789012] iwlwifi 0000:03:00.0: Start IWL Error Log Dump:",
+            ]
+
         random_message = random.choice(sys_log_messages)
         self.ingestion_service.try_ingest_flows(
             {

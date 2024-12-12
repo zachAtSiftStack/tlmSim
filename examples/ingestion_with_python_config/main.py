@@ -8,6 +8,7 @@ from sift_py.ingestion.service import IngestionService
 from simulator import Simulator
 from telemetry_config import vehicle_telemetry_config
 import time
+import sys
 
 if __name__ == "__main__":
     """
@@ -45,7 +46,11 @@ if __name__ == "__main__":
         # Create an optional run as part of this ingestion
         current_ts = datetime.now(timezone.utc)
         run_name = f"{telemetry_config.asset_name} functional dry run at {current_ts}"
-        ingestion_service.attach_run(channel, run_name, f"Rover functional checkout started at {current_ts}")
+        ingestion_service.attach_run(
+            channel,
+            run_name,
+            f"Rover functional checkout started at {current_ts}",
+        )
 
         simulator = Simulator(ingestion_service, seed=42)
 

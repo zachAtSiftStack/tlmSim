@@ -175,6 +175,40 @@ def vehicle_telemetry_config() -> TelemetryConfig:
         ],
     )
 
+    """
+    {
+        "name": "Camera Current Assert Expected",
+        "description": "Assert that the expected current is seen on the camera when in correct vehicle state",
+        "expression": "contains([\"Camera 1\"], $1) && $2 > 180 && $2 < 255",
+        "expression_channel_references": [
+        {
+            "channel_reference": "$1",
+            "channel_identifier": "vehicle_state"
+        },
+        {
+            "channel_reference": "$2",
+            "channel_identifier": "camera_1.current"
+        }
+        ],
+        "type": "review"
+    },
+    {
+        "name": "Camera Temperature Assert Expected",
+        "expression": "contains([\"Camera 1\"], $1) && $2 > 20 && $2 < 50",
+        "expression_channel_references": [
+        {
+            "channel_reference": "$1",
+            "channel_identifier": "vehicle_state"
+        },
+        {
+            "channel_reference": "$2",
+            "channel_identifier": "camera_1.current"
+        }
+        ],
+        "type": "review"
+    }
+    """
+
     # Define Rules (optional, based on your needs)
     overheating_rule = RuleConfig(
         name="overheating",
@@ -185,17 +219,6 @@ def vehicle_telemetry_config() -> TelemetryConfig:
             {"channel_reference": "$2", "channel_config": voltage_channel},
         ],
         action=RuleActionCreateDataReviewAnnotation(),
-    )
-
-    kinetic_energy_rule = RuleConfig(
-        name="kinetic_energy",
-        description="Tracks high energy output while in motion",
-        expression=named_expressions["kinetic_energy_gt"],
-        channel_references=[
-            {"channel_reference": "$1", "channel_config": voltage_channel},
-        ],
-        sub_expressions={"$mass": 10, "$threshold": 470},
-        action=RuleActionCreateDataReviewAnnotation(tags=["vehicle"]),
     )
 
     failure_rule = RuleConfig(
@@ -211,8 +234,8 @@ def vehicle_telemetry_config() -> TelemetryConfig:
 
     motor_current_monitor_rule = RuleConfig(
         name="Motor Current Monitor",
-        description="Alerts if any motor's current exceeds 1200 mA.",
-        expression='max($1, $2, $3, $4) > 1200',  # Alert if any motor current exceeds 1200 mA
+        description="Alerts if any motor's current exceeds +/- 1200 mA.",
+        expression='max(abs($1), abs($2), abs($3), abs($4)) > 1200',  # Alert if any motor current exceeds 1200 mA
         channel_references=[
             {"channel_reference": "$1", "channel_identifier": "motor_a.current"},
             {"channel_reference": "$2", "channel_identifier": "motor_b.current"},
@@ -238,7 +261,6 @@ def vehicle_telemetry_config() -> TelemetryConfig:
         ingestion_client_key="rover_1",
         rules=[
             overheating_rule,
-            kinetic_energy_rule,
             failure_rule,
             motor_current_monitor_rule,
             battery_level_monitor_rule,
