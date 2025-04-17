@@ -11,6 +11,7 @@ from sift_py.ingestion.rule.config import (
     RuleActionCreateDataReviewAnnotation,
     RuleConfig,
 )
+import uuid
 
 EXPRESSION_MODULES_DIR = Path().joinpath("expression_modules")
 
@@ -219,6 +220,7 @@ def vehicle_telemetry_config() -> TelemetryConfig:
             {"channel_reference": "$2", "channel_config": voltage_channel},
         ],
         action=RuleActionCreateDataReviewAnnotation(),
+        rule_client_key=f"overheating_{uuid.uuid4()}"
     )
 
     failure_rule = RuleConfig(
@@ -230,6 +232,7 @@ def vehicle_telemetry_config() -> TelemetryConfig:
         ],
         sub_expressions={"$sub_string": "failure"},
         action=RuleActionCreateDataReviewAnnotation(tags=["vehicle", "failure"]),
+        rule_client_key=f"failure_{uuid.uuid4()}"
     )
 
     motor_current_monitor_rule = RuleConfig(
@@ -243,6 +246,7 @@ def vehicle_telemetry_config() -> TelemetryConfig:
             {"channel_reference": "$4", "channel_identifier": "motor_d.current"}
         ],
         action=RuleActionCreateDataReviewAnnotation(tags=["electrical", "mechanical", "red"]),
+        rule_client_key=f"motor_current_{uuid.uuid4()}"
     )
 
     battery_level_monitor_rule = RuleConfig(
@@ -253,12 +257,13 @@ def vehicle_telemetry_config() -> TelemetryConfig:
             {"channel_reference": "$1", "channel_identifier": "battery_charge"}
         ],
         action=RuleActionCreateDataReviewAnnotation(tags=["electrical", "yellow"]),
+        rule_client_key=f"battery_level_{uuid.uuid4()}"
     )
 
     # Define Flows
     return TelemetryConfig(
         asset_name="rover_1",
-        ingestion_client_key="rover_1",
+        ingestion_client_key=f"rover_1_{uuid.uuid4()}",
         rules=[
             overheating_rule,
             failure_rule,
@@ -299,9 +304,21 @@ def vehicle_telemetry_config() -> TelemetryConfig:
                 name="readings",
                 channels=[voltage_channel, vehicle_state_channel, gpio_channel],
             ),
-            FlowConfig(name="voltage", channels=[voltage_channel]),
-            FlowConfig(name="gpio_channel", channels=[gpio_channel]),
-            FlowConfig(name="state_logs", channels=[state_log_channel]),
-            FlowConfig(name="sys_logs", channels=[sys_log_channel]),
+            FlowConfig(
+                name="voltage", 
+                channels=[voltage_channel]
+            ),
+            FlowConfig(
+                name="gpio_channel", 
+                channels=[gpio_channel]
+            ),
+            FlowConfig(
+                name="state_logs", 
+                channels=[state_log_channel]
+            ),
+            FlowConfig(
+                name="sys_logs", 
+                channels=[sys_log_channel]
+            ),
         ],
     )

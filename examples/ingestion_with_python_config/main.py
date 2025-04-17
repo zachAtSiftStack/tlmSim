@@ -1,5 +1,6 @@
 import os
 from datetime import datetime, timezone
+import uuid
 
 import threading
 from dotenv import load_dotenv
@@ -38,14 +39,13 @@ if __name__ == "__main__":
         # Create ingestion service using the telemetry config we loaded in
         ingestion_service = IngestionService(
             channel,
-            telemetry_config,
-            overwrite_rules=False,  # Overwrite any rules created in the Sift UI that isn't in the config
+            vehicle_telemetry_config(),  # Create new config for each run
             end_stream_on_error=False,  # End stream if errors occur API-side.
         )
 
         # Create an optional run as part of this ingestion
         current_ts = datetime.now(timezone.utc)
-        run_name = f"{telemetry_config.asset_name} functional dry run at {current_ts}"
+        run_name = f"{telemetry_config.asset_name} functional dry run {uuid.uuid4()}"
         ingestion_service.attach_run(
             channel,
             run_name,
@@ -89,14 +89,13 @@ if __name__ == "__main__":
         # Create ingestion service using the telemetry config we loaded in
         ingestion_service = IngestionService(
             channel,
-            telemetry_config,
-            overwrite_rules=False,  # Overwrite any rules created in the Sift UI that isn't in the config
+            vehicle_telemetry_config(),  # Create new config for each run
             end_stream_on_error=False,  # End stream if errors occur API-side.
         )
 
         # Create an optional run as part of this ingestion
         current_ts = datetime.now(timezone.utc)
-        run_name = f"{telemetry_config.asset_name} functional pre vibe {current_ts}"
+        run_name = f"{telemetry_config.asset_name} functional pre vibe {uuid.uuid4()}"
         ingestion_service.attach_run(channel, run_name, f"Rover functional checkout started at {current_ts}")
 
         simulator = Simulator(ingestion_service, seed=442)
@@ -137,14 +136,13 @@ if __name__ == "__main__":
         # Create ingestion service using the telemetry config we loaded in
         ingestion_service = IngestionService(
             channel,
-            telemetry_config,
-            overwrite_rules=False,  # Overwrite any rules created in the Sift UI that isn't in the config
+            vehicle_telemetry_config(),  # Create new config for each run
             end_stream_on_error=False,  # End stream if errors occur API-side.
         )
 
         # Create an optional run as part of this ingestion
         current_ts = datetime.now(timezone.utc)
-        run_name = f"{telemetry_config.asset_name} functional post vibe {current_ts}"
+        run_name = f"{telemetry_config.asset_name} functional post vibe {uuid.uuid4()}"
         ingestion_service.attach_run(channel, run_name, f"Rover functional checkout started at {current_ts}")
 
         simulator = Simulator(ingestion_service, seed=2442, faults=True)
